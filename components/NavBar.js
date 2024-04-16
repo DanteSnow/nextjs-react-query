@@ -6,7 +6,7 @@ export default function NavBar() {
   const router = useRouter();
 
   return (
-    <S.Navigation>
+    <nav>
       <Link
         style={{ color: router.pathname === "/" ? "red" : "blue" }}
         href="/"
@@ -19,15 +19,6 @@ export default function NavBar() {
       >
         <h1>ABOUT PAGE</h1>
       </Link>
-    </S.Navigation>
+    </nav>
   );
 }
-
-const S = {
-  Navigation: styled.nav`
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 20px 0;
-  `,
-};
