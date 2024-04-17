@@ -1,13 +1,21 @@
-import Seo from "@/components/Seo";
-
-const API_KEY = "6948daf616018b43a336d778947e1980";
-const BASE_URL = "https://api.themoviedb.org/3";
+export async function getServerSideProps() {
+  const response = await fetch(
+    `https://learn.codeit.kr/api/codestudit/users/codeit`
+  );
+  const data = await response.json();
+  return {
+    props: {
+      movies: data,
+    },
+  };
+}
 
 export default function About() {
   return (
-    <div>
-      <Seo title="ABOUT" />
-      <h1>ABOUT PAGE</h1>
-    </div>
+    <>
+      <div>{movies?.id}</div>
+      <div>{movies?.username}</div>
+      <div>{movies?.name}</div>
+    </>
   );
 }
