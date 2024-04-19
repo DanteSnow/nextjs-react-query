@@ -1,22 +1,50 @@
+import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
+async function fetchPosts() {
+  const response =
+    await fetch(`https://learn.codeit.kr/api/codestudit/posts?limit=100
+  `);
+  return response.json();
+}
+
 export async function getServerSideProps() {
-  const response = await fetch(
-    `https://learn.codeit.kr/api/codestudit/posts?limit=100
-    `
-  );
-  const { results } = await response.json();
+  const queryClient = new QueryClient();
+  await queryClient.prefetchQuery({
+    queryKey: ["posts"],
+    queryFn: fetchPosts,
+  });
+
   return {
     props: {
-      results,
+      dehydratedState: dehydrate(queryClient),
     },
   };
 }
 
-export default function Home({ results }) {
+// export async function getServerSideProps() {
+//   const response = await fetch(
+//     `https://learn.codeit.kr/api/codestudit/posts?limit=100
+//     `
+//   );
+//   const { results } = await response.json();
+//   return {
+//     props: {
+//       results,
+//     },
+//   };
+// }
+
+export default function Home() {
   const [username, setUsername] = useState("");
   const [content, setContent] = useState("");
+  const { data } = useQuery({
+    queryKey: ["posts"],
+    queryFn: fetchPosts,
+  });
+
+  const results = data ? data.results : [];
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -32,7 +60,6 @@ export default function Home({ results }) {
     });
     setUsername("");
     setContent("");
-    window.location.reload();
   };
 
   const handleUsernameChange = (event) => {
@@ -55,8 +82,16 @@ export default function Home({ results }) {
         </Link>
       ))}
       <form onSubmit={handleSubmit}>
-        <input onChange={handleUsernameChange} placeholder="이름" />
-        <textarea onChange={handleContentChange} placeholder="내용" />
+        <input
+          value={username}
+          onChange={handleUsernameChange}
+          placeholder="이름"
+        />
+        <textarea
+          value={content}
+          onChange={handleContentChange}
+          placeholder="내용"
+        />
         <button>등록</button>
       </form>
     </>
