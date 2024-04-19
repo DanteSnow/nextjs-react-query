@@ -10,7 +10,7 @@ export async function getServerSideProps() {
   };
 }
 
-export default function About() {
+export default function About({ movies }) {
   return (
     <>
       <div>{movies?.id}</div>
