@@ -16,6 +16,7 @@ export async function getServerSideProps() {
 export default function Home({ results }) {
   return (
     <>
+      <h1>전체 포스트 목록</h1>
       {results.map((result) => (
         <Link key={result.id} href={`/posts/${result.user.username}`}>
           <div>
