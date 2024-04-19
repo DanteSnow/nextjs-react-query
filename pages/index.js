@@ -1,4 +1,10 @@
-import { QueryClient, dehydrate, useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  dehydrate,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -6,6 +12,17 @@ async function fetchPosts() {
   const response =
     await fetch(`https://learn.codeit.kr/api/codestudit/posts?limit=100
   `);
+  return response.json();
+}
+
+async function postPost(data) {
+  const response = await fetch(`https://learn.codeit.kr/api/codestudit/posts`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
   return response.json();
 }
 
@@ -23,43 +40,33 @@ export async function getServerSideProps() {
   };
 }
 
-// export async function getServerSideProps() {
-//   const response = await fetch(
-//     `https://learn.codeit.kr/api/codestudit/posts?limit=100
-//     `
-//   );
-//   const { results } = await response.json();
-//   return {
-//     props: {
-//       results,
-//     },
-//   };
-// }
-
 export default function Home() {
   const [username, setUsername] = useState("");
   const [content, setContent] = useState("");
+  const queryClient = useQueryClient();
   const { data } = useQuery({
     queryKey: ["posts"],
     queryFn: fetchPosts,
   });
-
   const results = data ? data.results : [];
+
+  const uploadPostMutation = useMutation({
+    mutationFn: (newPost) => postPost(newPost),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["posts"],
+      });
+      setContent("");
+      setUsername("");
+    },
+  });
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await fetch(`https://learn.codeit.kr/api/codestudit/posts`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        content,
-      }),
+    uploadPostMutation.mutate({
+      username,
+      content,
     });
-    setUsername("");
-    setContent("");
   };
 
   const handleUsernameChange = (event) => {
