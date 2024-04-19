@@ -1,21 +1,25 @@
 export async function getServerSideProps() {
   const response = await fetch(
-    `https://learn.codeit.kr/api/codestudit/users/codeit`
+    `https://learn.codeit.kr/api/codestudit/posts
+    `
   );
-  const data = await response.json();
+  const { results } = await response.json();
   return {
     props: {
-      movies: data,
+      results,
     },
   };
 }
 
-export default function Home({ movies }) {
+export default function Home({ results }) {
   return (
     <>
-      <div>{movies?.id}</div>
-      <div>{movies?.username}</div>
-      <div>{movies?.name}</div>
+      {results.map((result) => (
+        <div key={result.id}>
+          <h1>{result.user.name}</h1>
+          <p>{result.content}</p>
+        </div>
+      ))}
     </>
   );
 }
