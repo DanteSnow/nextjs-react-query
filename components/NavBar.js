@@ -6,17 +6,8 @@ export default function NavBar() {
 
   return (
     <nav>
-      <Link
-        style={{ color: router.pathname === "/" ? "red" : "blue" }}
-        href="/"
-      >
-        <h1>All POST LIST</h1>
-      </Link>
-      <Link
-        style={{ color: router.pathname === "/about" ? "red" : "blue" }}
-        href="/about"
-      >
-        <h1>USER POST LIST</h1>
+      <Link href="/">
+        <h1>HOME {router.pathname === "/" ? "🏠" : ""}</h1>
       </Link>
     </nav>
   );
